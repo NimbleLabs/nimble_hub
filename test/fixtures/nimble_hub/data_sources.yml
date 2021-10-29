@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  uuid: MyString
+  user: one
+  source_type: MyString
+  metadata: 
+
+two:
+  name: MyString
+  uuid: MyString
+  user: two
+  source_type: MyString
+  metadata: 

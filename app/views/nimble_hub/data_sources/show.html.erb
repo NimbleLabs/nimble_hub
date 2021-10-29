@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @data_source.name %>
+</p>
+
+<p>
+  <strong>Uuid:</strong>
+  <%= @data_source.uuid %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @data_source.user_id %>
+</p>
+
+<p>
+  <strong>Source type:</strong>
+  <%= @data_source.source_type %>
+</p>
+
+<p>
+  <strong>Metadata:</strong>
+  <%= @data_source.metadata %>
+</p>
+
+<%= link_to 'Edit', edit_data_source_path(@data_source) %> |
+<%= link_to 'Back', data_sources_path %>

@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Integrations</h1>
+
+<%= link_to 'Setup', {controller: :integrations, action: 'setup', provider: 'tweets'}, method: :get, class: 'btn btn-success btn-lg' %>
+
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th colspan="2"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @integrations.each do |integration| %>
+      <tr>
+        <td><%= integration.name %></td>
+        <td><%= link_to 'Show', integration %></td>
+        <td><%= link_to 'Destroy', integration, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'Home', '/' %>
