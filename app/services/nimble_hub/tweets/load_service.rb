@@ -54,9 +54,9 @@ module NimbleHub
           favorites: user_profile.favourites_count,
           tweets: user_profile.statuses_count,
           description: user_profile.description,
-          website: user_profile.website,
+          website: user_profile.website.to_s,
           location: user_profile.location,
-          image_url: user_profile.profile_image_uri_https(:original),
+          image_url: user_profile.profile_image_uri_https(:original).to_s,
           created_at: user_profile.created_at,
           date: Date.today
         }

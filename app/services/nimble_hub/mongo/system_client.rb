@@ -11,11 +11,8 @@ class NimbleHub::Mongo::SystemClient
         max_pool_size: 20
     }
 
-    if Rails.env.production?
-      return Mongo::Client.new(ENV['MONGO_URL'], options)
-    end
-
-    options[:database] = Rails.env.test? ? 'nimble_hub_test' : 'nimble_hub_dev'
+    return Mongo::Client.new(ENV['MONGO_URL'], options) if Rails.env.production?
+    options[:database] = Rails.env.test? ? 'nimble_hub_test' : 'nimble_hubz_dev'
     Mongo::Client.new(['127.0.0.1:27017'], options)
   end
 

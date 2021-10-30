@@ -7,7 +7,7 @@ module NimbleHub
       begin
         provider = params[:provider]
 
-        if provider == 'tweets'
+        if provider == 'twitter'
           oauth_token = params["oauth_token"]
           oauth_verifier = params["oauth_verifier"]
           @service = NimbleHub::Tweets::OauthService.new(oauth_token, oauth_verifier, current_user)

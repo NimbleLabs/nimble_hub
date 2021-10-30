@@ -21,7 +21,7 @@ module NimbleHub
     end
 
     def setup
-      if params[:provider] == 'tweets'
+      if params[:provider] == 'twitter'
         redirect_to NimbleHub::Tweets::OauthService.authorize_url
       end
     end

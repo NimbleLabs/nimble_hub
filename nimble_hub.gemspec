@@ -26,5 +26,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "oauth"
   spec.add_dependency "friendly_id"
   spec.add_dependency "mongo"
-  spec.add_dependency "tweets"
+  spec.add_dependency "twitter"
 end

@@ -6,7 +6,7 @@ class NimbleHub::Tweets::OauthService
     @oauth_token = oauth_token
     @oauth_verifier = oauth_verifier
     @user = user
-    @baseUrl = 'https://api.tweets.com/oauth/access_token'
+    @baseUrl = 'https://api.twitter.com/oauth/access_token'
   end
 
   def process_oauth
@@ -34,13 +34,13 @@ class NimbleHub::Tweets::OauthService
   def self.authorize_url
 
     oauth_options = {
-      site: 'https://api.tweets.com',
+      site: 'https://api.twitter.com',
       authorize_path: '/oauth/authenticate',
       debug_output: false
     }
 
     consumer = OAuth::Consumer.new(ENV['TWITTER_KEY'], ENV['TWITTER_SECRET'],oauth_options)
-    callback_url = ENV['OAUTH_REDIRECT_URI'] + 'tweets'
+    callback_url = ENV['OAUTH_REDIRECT_URI'] + 'twitter'
     request_token = consumer.get_request_token(:oauth_callback => callback_url)
     token = request_token.token
     confirmed = request_token.params["oauth_callback_confirmed"]
@@ -50,7 +50,7 @@ class NimbleHub::Tweets::OauthService
       return integrations_path
     end
 
-    "https://api.tweets.com/oauth/authorize?oauth_token=#{token}"
+    "https://api.twitter.com/oauth/authorize?oauth_token=#{token}"
   end
 
   private
