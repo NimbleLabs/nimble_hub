@@ -17,6 +17,37 @@ class NimbleHub::Tweets::OauthService
     @twitter_user_id = parse_token_data(response_data, 'user_id=' )
     @screen_name = parse_token_data(response_data, 'screen_name=' )
 
+    if @user.blank?
+
+      @service = NimbleHub::Tweets::TwitterService.new(@access_token, @access_secret)
+      @user_profile = @service.profile
+
+      @user = User.find_by_email(@user_profile.email)
+
+      if @user.blank?
+        user_params = {
+          name: @user_profile.name,
+          email: @user_profile.email,
+          password: Devise.friendly_token[0, 20],
+          image_url: @user_profile.profile_image_uri_https(:original).to_s
+        }
+        @user = User.create(user_params)
+
+        if @user.errors.any?
+          puts '*****************************'
+          puts 'Boom!'
+        end
+
+        puts '---------------'
+        puts "name: #{@user_profile.name}"
+        puts "email: #{@user_profile.email}"
+        puts '---------------'
+
+      end
+
+
+    end
+
     integration = NimbleHub::Integration.where({user_id: @user.id, name: 'Twitter'}).first_or_create
     integration.access_token = @access_token
     integration.access_token_secret = @access_secret

@@ -2,7 +2,7 @@ require_dependency "nimble_hub/application_controller"
 
 module NimbleHub
   class IntegrationsController < ApplicationController
-    before_action :authenticate_user!
+    # before_action :authenticate_user!
     before_action :set_integration, only: [:show, :edit, :update, :destroy]
 
     # GET /integrations

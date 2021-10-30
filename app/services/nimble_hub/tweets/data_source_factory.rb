@@ -32,6 +32,7 @@ class NimbleHub::Tweets::DataSourceFactory < NimbleHub::BaseDataSourceFactory
   def create_tweet_datasource
     column_metadata = [
       { name: 'user', type: 'string' },
+      { name: 'tweet_id', type: 'string' },
       { name: 'tweet', type: 'string' },
       { name: 'favorite_count', type: 'integer' },
       { name: 'quote_count', type: 'integer' },

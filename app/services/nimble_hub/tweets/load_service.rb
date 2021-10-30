@@ -6,6 +6,7 @@ module NimbleHub
     class LoadService
 
       def run
+        starting = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         @user = User.first
         @factory = NimbleHub::Tweets::DataSourceFactory.new(@user)
         @factory.create_data_sources unless @factory.data_sources?
@@ -14,12 +15,17 @@ module NimbleHub
           config.consumer_secret = ENV['TWITTER_SECRET']
         end
         load_user_data
+
+        ending = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        elapsed = ending - starting
+        puts "Time elapsed: #{elapsed}"
       end
 
       def load_user_data
-        seed_users = %w[harrisreynolds agazdecki DanielleMorrill jesterxl KateBour 5harath garrytan
-        nocodedevs bentossell awilkinson thisiskp_ AndrewWarner Harris_Bryan tdinh_me]
+        # seed_users = %w[harrisreynolds agazdecki DanielleMorrill jesterxl KateBour 5harath garrytan
+        # nocodedevs bentossell awilkinson thisiskp_ AndrewWarner Harris_Bryan tdinh_me]
 
+        seed_users = %w[harrisreynolds agazdecki]
         @growth_datasource = @factory.growth_datasource
         @user_datasource = @factory.user_datasource
         @growth_storage = NimbleHub::Mongo::StorageService.new(@growth_datasource)
@@ -29,10 +35,45 @@ module NimbleHub
           user_profile = @client.user(twitter_user)
           @growth_storage.create(growth_record(twitter_user, user_profile))
           save_user_record(twitter_user, user_profile)
+
+          load_tweets(twitter_user)
         end
       end
 
       private
+
+      def load_tweets(twitter_user)
+
+        total_processed = 0
+        min_id = nil
+
+        options = {count: 200, include_rts: true}
+        tweets = @client.user_timeline(twitter_user, options)
+
+        while !tweets.empty? || total_processed < 3200
+
+          tweets.each do |tweet|
+            min_id = tweet.id if min_id.nil? || tweet.id < min_id
+            save_tweet_record(twitter_user, tweet)
+          end
+
+          total_processed += tweets.length
+          options = {count: 200, include_rts: true, max_id: min_id}
+          tweets = @client.user_timeline(twitter_user, options)
+        end
+
+      end
+
+      def save_tweet_record(twitter_user, tweet)
+        record = tweet_record(twitter_user, tweet)
+        filter = { tweet_id: tweet.id }
+
+        if @user_storage.exists?(filter)
+          @user_storage.update(filter, record)
+        else
+          @user_storage.create(record)
+        end
+      end
 
       def save_user_record(twitter_user, user_profile)
         record = user_record(twitter_user, user_profile)
@@ -43,6 +84,19 @@ module NimbleHub
         else
           @user_storage.create(record)
         end
+      end
+
+      def tweet_record(user_name, tweet)
+        {
+          user: user_name,
+          tweet_id: tweet.id,
+          tweet: tweet.text,
+          favorite_count: tweet.favorite_count,
+          quote_count: tweet.quote_count,
+          reply_count: tweet.reply_count,
+          retweet_count: tweet.retweet_count,
+          created_at: tweet.created_at
+        }
       end
 
       def user_record(user_name, user_profile)
