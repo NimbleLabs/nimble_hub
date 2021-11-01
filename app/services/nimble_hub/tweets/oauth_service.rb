@@ -38,11 +38,6 @@ class NimbleHub::Tweets::OauthService
           puts 'Boom!'
         end
 
-        puts '---------------'
-        puts "name: #{@user_profile.name}"
-        puts "email: #{@user_profile.email}"
-        puts '---------------'
-
       end
 
 

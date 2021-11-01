@@ -35,7 +35,16 @@ module NimbleHub
           user_profile = @client.user(twitter_user)
           @growth_storage.create(growth_record(twitter_user, user_profile))
           save_user_record(twitter_user, user_profile)
+        end
 
+        @growth_storage.close
+        @user_storage.close
+
+        puts '***********************************************'
+        puts 'About to save tweets'
+        puts '***********************************************'
+
+        seed_users.each do |twitter_user|
           load_tweets(twitter_user)
         end
       end
@@ -53,7 +62,15 @@ module NimbleHub
         while !tweets.empty? || total_processed < 3200
 
           tweets.each do |tweet|
-            min_id = tweet.id if min_id.nil? || tweet.id < min_id
+
+            if min_id.nil?
+              min_id = tweet.id
+            end
+
+            if tweet.id < min_id
+              min_id = tweet.id
+            end
+
             save_tweet_record(twitter_user, tweet)
           end
 
@@ -62,16 +79,21 @@ module NimbleHub
           tweets = @client.user_timeline(twitter_user, options)
         end
 
+        puts 'Finished processing for ' + twitter_user
       end
 
       def save_tweet_record(twitter_user, tweet)
+        puts 'Saving tweet'
+
+        @tweet_datasource = @factory.tweet_datasource
+        @tweet_storage = NimbleHub::Mongo::StorageService.new(@tweet_datasource)
         record = tweet_record(twitter_user, tweet)
         filter = { tweet_id: tweet.id }
 
-        if @user_storage.exists?(filter)
-          @user_storage.update(filter, record)
+        if @tweet_storage.exists?(filter)
+          @tweet_storage.update(filter, record)
         else
-          @user_storage.create(record)
+          @tweet_storage.create(record)
         end
       end
 
@@ -91,10 +113,10 @@ module NimbleHub
           user: user_name,
           tweet_id: tweet.id,
           tweet: tweet.text,
-          favorite_count: tweet.favorite_count,
-          quote_count: tweet.quote_count,
-          reply_count: tweet.reply_count,
-          retweet_count: tweet.retweet_count,
+          favorite_count: tweet.favorite_count.nil? ? 0 : tweet.favorite_count,
+          quote_count: tweet.quote_count.nil? ? 0 : tweet.quote_count,
+          reply_count: tweet.reply_count.nil? ? 0 : tweet.reply_count,
+          retweet_count: tweet.retweet_count.nil? ? 0 : tweet.retweet_count,
           created_at: tweet.created_at
         }
       end

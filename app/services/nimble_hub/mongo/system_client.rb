@@ -12,7 +12,7 @@ class NimbleHub::Mongo::SystemClient
     }
 
     return Mongo::Client.new(ENV['MONGO_URL'], options) if Rails.env.production?
-    options[:database] = Rails.env.test? ? 'nimble_hub_test' : 'nimble_hubz_dev'
+    options[:database] = Rails.env.test? ? 'nimble_hub_test' : 'nimble_hub_dev'
     Mongo::Client.new(['127.0.0.1:27017'], options)
   end
 

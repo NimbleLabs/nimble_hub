@@ -1,7 +1,7 @@
 class NimbleHub::Mongo::StorageService
   def initialize(data_source)
     @client = NimbleHub::Mongo::SystemClient.new
-    @collection = @client.collection(data_source.uuid)
+    @collection = @client.collection(data_source.table_name)
   end
 
   def list
@@ -11,12 +11,7 @@ class NimbleHub::Mongo::StorageService
   end
 
   def create(document)
-    oid = BSON::ObjectId.new
-    document[:_id] = oid
     @collection.insert_one(document)
-    record = get_and_format_document(oid)
-    @client.close
-    record
   end
 
   def count
@@ -67,6 +62,10 @@ class NimbleHub::Mongo::StorageService
 
   def get_and_format_document(oid)
     NimbleHub::Mongo::DocumentUtil.format_oid(@collection.find('_id' => oid).first)
+  end
+
+  def close
+    @client.close
   end
 
 end

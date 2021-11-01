@@ -19,7 +19,7 @@ module NimbleHub
             return
           end
 
-          # NimbleHub::LoadTwitterJob.perform_later
+          NimbleHub::LoadTwitterJob.perform_later
         end
 
         redirect_to integrations_path

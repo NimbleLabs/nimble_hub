@@ -17,6 +17,10 @@ module NimbleHub
       end
     end
 
+    def table_name
+      "#{source_type}#{name}"
+    end
+
     def name_and_type
       "#{source_type} #{name}"
     end
